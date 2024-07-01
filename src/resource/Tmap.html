@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>simpleMap</title>
+<script
+	src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=fOsIyENUEf8ArejvlqGDU4p66eOsMRjB5kII22do"></script>
+<script type="text/javascript">
+	var map;
+	var lonlat;
+    var lines;
+    var marker;
+    var marker1;
+
+    function littleEndianHexStringToDecimal(string)
+	{
+		if(!string) return undefined;
+		var len = string.length;
+		var bigEndianHexString = "0x";
+		for(var i = 0; i < len/2; i++)
+		{
+			bigEndianHexString += string.substring((len-((i+1)*2)),(len-(i*2)));
+		}
+		return parseInt(bigEndianHexString);
+	}
+
+
+	function initTmap(){
+		screen_height = (window.screen.availHeight/2.5) + "px"
+		map = new Tmapv2.Map("map_div", {
+			center : new Tmapv2.LatLng(37.56520450, 126.98702028),
+			width : "100%",
+			height : screen_height,
+			zoom : 17
+		});
+		marker = new Tmapv2.Marker({
+			position: new Tmapv2.LatLng(37.56520450, 126.98602028), 
+            icon: './blue_car.png',
+			map: map 
+		});
+		marker1 = new Tmapv2.Marker({
+			position: new Tmapv2.LatLng(37.56520450, 126.98702028), 
+            icon: './red_car.png',
+			map: map 
+		});
+
+
+	}        
+
+	function Move(){
+	 	var lonlat = new Tmapv2.LatLng(37.56520450, 126.98702028);
+		map.setCenter(lonlat); 
+	}
+    function openTextFile() {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = "text/plain"; 
+    input.onchange = function (event) {
+        processFile(event.target.files[0]);
+    };
+    input.click();
+}
+
+    function openTextFile1() {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = "text/plain"; 
+    input.onchange = function (event) {
+        processFile1(event.target.files[0]);
+    };
+    input.click();
+}
+
+function processFile(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+    lines = reader.result.split(/\r\n|\n/);
+    var Lng;
+    var Lat;
+    var line = 0;
+    var latLng;
+    //output.innerText = dec;
+    let timerID = setInterval(() => {
+        Lat = (littleEndianHexStringToDecimal(lines[line].substr(24,8))) / 10000000;
+        Lng = (littleEndianHexStringToDecimal(lines[line].substr(32,8))) / 10000000;
+        console.log(Lat);
+        console.log(Lng);
+        latLng = new Tmapv2.LatLng(Lat, Lng);
+        map.setCenter(latLng);
+        marker.setPosition(latLng);
+        console.log(Lat + "," + Lng);
+        line++;
+    }, 50);
+    };
+    reader.readAsText(file /* optional */ );
+    
+        //var hex = reader.result.substring(12,16);
+        //var dec = parseInt(hex, 16);
+        //output.innerText = hex;
+}
+
+function processFile1(file) {
+    var reader1 = new FileReader();
+    reader1.onload = function () {
+    lines = reader1.result.split(/\r\n|\n/);
+    var Lng;
+    var Lat;
+    var line = 0;
+    var latLng;
+    //output.innerText = dec;
+    let timerID = setInterval(() => {
+        Lat = (littleEndianHexStringToDecimal(lines[line].substr(24,8))) / 10000000;
+        Lng = (littleEndianHexStringToDecimal(lines[line].substr(32,8))) / 10000000;
+        console.log(Lat);
+        console.log(Lng);
+        latLng = new Tmapv2.LatLng(Lat, Lng);
+        marker1.setPosition(latLng);
+        console.log(Lat + "," + Lng);
+        line++;
+    }, 50);
+    };
+    reader1.readAsText(file /* optional */ );
+
+        //var hex = reader.result.substring(12,16);
+        //var dec = parseInt(hex, 16);
+        //output.innerText = hex;
+}
+
+function centering(){
+    for(var line = 0 ; line < lines.length -1; line ++){
+        Lng = (littleEndianHexStringToDecimal(lines[line].substr(32,8)));
+        Lat = (littleEndianHexStringToDecimal(lines[line].substr(40,8)));
+        var latLng = new Tmapv2.LatLng(Lat, Lng);
+        map.setCenter(latLng);
+        //hex = '0x' + lines[line].substr(12,4);
+        //console.log(line + " --> " + hex);
+    }
+}
+
+function receiving(Lat_r, Lng_r, Lat_s, Lng_s){
+    var Lat_r_Float = parseFloat(Lat_r);
+    var Lng_r_Float = parseFloat(Lng_r);
+    var Lat_s_Float = parseFloat(Lat_s);
+    var Lng_s_Float = parseFloat(Lng_s);
+
+    var Lat_Lng = new Tmapv2.LatLng(Lat_r_Float, Lng_r_Float);
+
+    var Lat_s_Lng_s = new Tmapv2.LatLng(Lat_s_Float, Lng_s_Float);
+
+    map.setCenter(Lat_Lng);
+    marker.setPosition(Lat_Lng);
+    marker1.setPosition(Lat_s_Lng_s);
+}
+
+
+
+</script>
+</head>
+<body onload="initTmap()">
+	<div id="map_div"></div>
+</body>
+</html>
