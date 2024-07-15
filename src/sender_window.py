@@ -38,7 +38,7 @@ SER_BAUD = 9600     # Serial Baud Rate
 # 5G NR Device Connection Variable
 DEVICE_ADDR = '192.168.1.11'
 DEVICE_PORT = 47347
-SOCKET_SEND_DELAY = 0
+SOCKET_SEND_DELAY = 0  # if OBU Resource reservation Period = 0, set SOCKET_SEND_DELAY > 0
 
 # Video Data Size
 SENDER_FRAME_MSEC = 120  # Only 'int' value & Milliseconds ( 60 Frame -> 1000 milliseconds / 60 frames = 16.66666....)
